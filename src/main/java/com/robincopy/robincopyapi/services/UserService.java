@@ -26,7 +26,7 @@ public class UserService {
 
     public ShareAddedDto addShare(NewShareDto newShareDto) {
         User user = userRepository.findById(newShareDto.getUserId()).orElseThrow(() -> new NotFoundException("User not found"));
-        Share share = new Share(newShareDto.getQuantity(), user, newShareDto.getSymbol());
+        Share share = new Share(newShareDto.getQuantity(), user, newShareDto.getSymbol(), 0.0);
         return shareRepository.save(share).toDto();
     }
 
