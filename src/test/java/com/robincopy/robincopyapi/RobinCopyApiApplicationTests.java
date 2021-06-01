@@ -10,4 +10,16 @@ class RobinCopyApiApplicationTests {
 	void contextLoads() {
 	}
 
+	/* Stock
+		* Test external API
+	 */
+
+	/* Share
+		*
+	 */
+
+	/*
+		*
+	 */
+
 }
