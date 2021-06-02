@@ -26,20 +26,25 @@ public class User extends AbstractEntity {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "holder")
     private List<Share> shares;
 
+    private Double investedBalance;
+
     public User(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.shares = new ArrayList<>();
+        this.investedBalance = 0.0;
     }
 
     public static User from(UserDto userDto) {
         return User.builder()
                 .firstName(userDto.getFirstName())
                 .lastName(userDto.getLastName())
+                .investedBalance(0.0)
                 .build();
     }
 
     public void addShare(int quantity, Double price, String stockSymbol) {
+        investedBalance += (price * quantity);
         Optional<Share> share = shares.stream().filter(share1 -> share1.getStockSymbol().equals(stockSymbol)).findFirst();
         if (share.isPresent()) share.get().increaseQuantity(quantity, price);
         else shares.add(new Share(quantity, this, stockSymbol, price));
@@ -57,7 +62,7 @@ public class User extends AbstractEntity {
         return found.getAverageBuyPrice();
     }
 
-    public Share getShare(String shareId){
+    public Share getShare(String shareId) {
         return shares.stream().filter(share -> share.getId().equals(shareId)).findFirst().orElseThrow(() -> new NotFoundException("Share not found"));
     }
 }

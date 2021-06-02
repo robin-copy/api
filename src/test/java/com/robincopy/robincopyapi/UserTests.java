@@ -23,10 +23,7 @@ class UserTests {
     @Autowired
     private UserRepository userRepository;
 
-    // persistencia (base de datos)
-    // API, externa()
-
-    /* Users
+    /* USERS
      * New user should have no shares
      * When adding a share to a user, user shares should include it
      * When adding a repeated share to a user, user share should increase quantity
@@ -35,7 +32,10 @@ class UserTests {
      * When removing a share from a user(with quantity > 1), user share should decrease quantity
      * Removing non existing share, should throw error
      * ---
-     * User Persistence
+     * USERS DB PERSISTENCE
+     * When saving a user , it can be read from db
+     * When deleting a user, it can no longer be read from db
+     * When modifying a user and saving it, it modifies on db
      */
 
     @Test
@@ -98,17 +98,20 @@ class UserTests {
         assertThat(exception.getMessage()).isEqualTo("Share not found");
     }
 
+    // PERSISTENCE TESTS
+
     @Test
     void createdUser_ShouldBePersisted() {
         User user = new User("name", "lastname");
         user.addShare( 3, 100.0, "TSLA");
         user = userRepository.save(user);
 
-        User persistedUser = userRepository.findById(user.getId()).get();
-        assertThat(persistedUser.getId()).isEqualTo(user.getId());
-        assertThat(persistedUser.getFirstName()).isEqualTo("name");
-        assertThat(persistedUser.getLastName()).isEqualTo("lastname");
-        assertThat(persistedUser.getShares().get(0).getQuantity()).isEqualTo(3);
+        Optional<User> persistedUser = userRepository.findById(user.getId());
+        assertThat(persistedUser).isPresent();
+        assertThat(persistedUser.get().getId()).isEqualTo(user.getId());
+        assertThat(persistedUser.get().getFirstName()).isEqualTo("name");
+        assertThat(persistedUser.get().getLastName()).isEqualTo("lastname");
+        assertThat(persistedUser.get().getShares().get(0).getQuantity()).isEqualTo(3);
     }
 
     @Test
@@ -120,6 +123,25 @@ class UserTests {
 
         Optional<User> deletedUser = userRepository.findById(user.getId());
         assertThat(deletedUser).isEmpty();
+    }
+
+    @Test
+    void modifiedUser_ShouldBePersisted() {
+        User user = new User("name", "lastname");
+        user.addShare( 3, 100.0, "TSLA");
+        user = userRepository.save(user);
+
+        Optional<User> foundUser = userRepository.findById(user.getId());
+        assertThat(foundUser).isPresent();
+        foundUser.get().addShare(2, 120.0, "TSLA");
+        userRepository.save(foundUser.get());
+
+        Optional<User> persistedUser = userRepository.findById(user.getId());
+        assertThat(persistedUser).isPresent();
+        assertThat(persistedUser.get().getId()).isEqualTo(user.getId());
+        assertThat(persistedUser.get().getFirstName()).isEqualTo("name");
+        assertThat(persistedUser.get().getLastName()).isEqualTo("lastname");
+        assertThat(persistedUser.get().getShares().get(0).getQuantity()).isEqualTo(5);
     }
 
 }

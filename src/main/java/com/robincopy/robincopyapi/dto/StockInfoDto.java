@@ -5,19 +5,19 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ShareAddedDto {
+public class StockInfoDto {
 
-    private String userId;
-
-    private String symbol;
-
-    private Integer quantity;
-
-    private Double price;
-
-
+    List<Double> c;
+    List<Double> h;
+    List<Double> l;
+    List<Double> o;
+    List<Long> t;
+    String s;
+    List<Double> v;
 }

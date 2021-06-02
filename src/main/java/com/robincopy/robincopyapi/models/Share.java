@@ -27,14 +27,10 @@ public class Share extends AbstractEntity{
     private Double averageBuyPrice;
 
     public ShareAddedDto toDto() {
-        return ShareAddedDto.builder()
-                .quantity(quantity)
-                .symbol(stockSymbol)
-                .userId(holder.getId())
-                .build();
+        return new ShareAddedDto(holder.getId(), stockSymbol, quantity, averageBuyPrice);
     }
 
-    public void increaseQuantity(int amount, Double price){
+    public void increaseQuantity(int amount, Double price) {
         if(amount <= 0) throw new BadRequestException("Share amount parameter can't be less or equal to zero");
         averageBuyPrice = (averageBuyPrice * quantity + price * amount) / (quantity + amount);
         quantity+=amount;

@@ -18,4 +18,11 @@ public class UserDto {
 
     @NotNull
     private String lastName;
+
+    private String userId;
+
+    public UserDto(String firstName, String lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
 }

@@ -5,19 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ShareAddedDto {
+public class StockSummary {
 
-    private String userId;
-
-    private String symbol;
-
-    private Integer quantity;
-
-    private Double price;
-
+    private Double balance;
+    private Double increasePercentage;
+    private List<StockSummaryInfo> stocksInfo;
 
 }

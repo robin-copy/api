@@ -9,15 +9,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ShareAddedDto {
+public class StockQuoteInfo {
 
-    private String userId;
-
-    private String symbol;
-
-    private Integer quantity;
-
-    private Double price;
-
-
+    private Double c;
+    private Double h;
+    private Double l;
+    private Double o;
+    private Double pc;
+    private Long t;
 }
