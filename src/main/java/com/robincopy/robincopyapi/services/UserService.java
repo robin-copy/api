@@ -67,6 +67,11 @@ public class UserService {
         return stockService.getUserStockSummary(user);
     }
 
+    public String getDefaultUserId(){
+        User defaultUser = userRepository.findByFirstNameAndLastName("Juan", "Perez").orElseThrow(() -> new NotFoundException("User not found"));
+        return defaultUser.getId();
+    }
+
     @PostConstruct
     private void init() {
         if (!userRepository.existsByFirstNameAndLastName("Juan", "Perez")) {

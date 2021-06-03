@@ -43,4 +43,9 @@ public class UserController {
     public StockSummary getUserStocksSummary(@PathVariable(value = "userId") String userId){
         return userService.getUserStockSummary(userId);
     }
+
+    @GetMapping("/defaultUser")
+    public String getDefaultUser(){
+        return userService.getDefaultUserId();
+    }
 }
