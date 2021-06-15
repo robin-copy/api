@@ -26,7 +26,7 @@ class ShareTests {
      */
 
     @Test
-    void addingShare_ShouldChangeAverageBuyPrice() {
+    void test01_addingShare_ShouldChangeAverageBuyPrice() {
         User user = new User("test", "test_last");
         Share share = new Share(1, user, "TSLA", 100.0);
         share.increaseQuantity(1, 200.0);
@@ -35,17 +35,23 @@ class ShareTests {
     }
 
     @Test
-    void addingShareAndAmountParameterIsNegativeOrZero_ShouldThrowAnError() {
+    void test02_addingShareAndAmountParameterIsNegativeShouldThrowAnError() {
         User user = new User("test", "test_last");
         Share share = new Share(1, user, "TSLA", 100.0);
-        Throwable exceptionZero = assertThrows(BadRequestException.class, () -> share.increaseQuantity(0, 200.0));
         Throwable exceptionNegative = assertThrows(BadRequestException.class, () -> share.increaseQuantity(-1, 200.0));
-        assertThat(exceptionZero.getMessage()).isEqualTo("Share amount parameter can't be less or equal to zero");
         assertThat(exceptionNegative.getMessage()).isEqualTo("Share amount parameter can't be less or equal to zero");
     }
 
     @Test
-    void removingShare_ShouldNotChangeAverageBuyPrice() {
+    void test03_addingShareAndAmountParameterIsZeroShouldThrowAnError() {
+        User user = new User("test", "test_last");
+        Share share = new Share(1, user, "TSLA", 100.0);
+        Throwable exceptionZero = assertThrows(BadRequestException.class, () -> share.increaseQuantity(0, 200.0));
+        assertThat(exceptionZero.getMessage()).isEqualTo("Share amount parameter can't be less or equal to zero");
+    }
+
+    @Test
+    void test04_removingShare_ShouldNotChangeAverageBuyPrice() {
         User user = new User("test", "test_last");
         Share share = new Share(2, user, "TSLA", 100.0);
         share.decreaseQuantity(1);
@@ -54,7 +60,7 @@ class ShareTests {
     }
 
     @Test
-    void removingShareWithFinalQuantityNegative_ShouldThrowAnError() {
+    void test05_removingShareWithFinalQuantityNegative_ShouldThrowAnError() {
         User user = new User("test", "test_last");
         Share share = new Share(1, user, "TSLA", 100.0);
         Throwable exception = assertThrows(BadRequestException.class, () -> share.decreaseQuantity(2));
@@ -62,7 +68,7 @@ class ShareTests {
     }
 
     @Test
-    void removingShareWithFinalQuantityZero_ShouldChangeAveragePriceToZero() {
+    void test05_removingShareWithFinalQuantityZero_ShouldChangeAveragePriceToZero() {
         User user = new User("test", "test_last");
         Share share = new Share(1, user, "TSLA", 100.0);
         share.decreaseQuantity(1);

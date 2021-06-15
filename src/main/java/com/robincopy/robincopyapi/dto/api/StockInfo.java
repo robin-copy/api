@@ -1,4 +1,4 @@
-package com.robincopy.robincopyapi.dto;
+package com.robincopy.robincopyapi.dto.api;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StockDetails {
+public class StockInfo {
 
     private Long marketCapitalization;
     private String weburl;

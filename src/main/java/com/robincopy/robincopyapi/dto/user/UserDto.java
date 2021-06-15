@@ -1,4 +1,4 @@
-package com.robincopy.robincopyapi.dto;
+package com.robincopy.robincopyapi.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

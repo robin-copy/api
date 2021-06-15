@@ -15,11 +15,12 @@ services:
       DB_PORT: 5432
       ASECA_PASSWORD: ${ASECA_PASSWORD}
       DB_USER: postgres
+      MOCKED_EXTERNAL_API: ${MOCKED_EXTERNAL_API}
     deploy:
       resources:
         limits:
-          cpus: 0.25
-          memory: 2048M
+          cpus: 0.50
+          memory: 512M
 
   user_db:
     container_name: stock_postgres_db

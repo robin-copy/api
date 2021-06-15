@@ -12,11 +12,11 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StockReducedInfo {
+public class StockReducedInfoDto {
 
     private String stockSymbol;
     private Double price;
-    private List<StockPrice> stockPrices;
+    private List<StockPriceDto> stockPriceDtos;
     private int sharesQuantity;
     private PriceStatus priceStatus;
 }

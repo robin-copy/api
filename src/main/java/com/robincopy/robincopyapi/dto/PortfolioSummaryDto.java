@@ -5,16 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class StockQuoteInfo {
+public class PortfolioSummaryDto {
 
-    private Double c;
-    private Double h;
-    private Double l;
-    private Double o;
-    private Double pc;
-    private Long t;
+    private Double balance;
+    private Double increasePercentage;
+    private List<SummaryStockInfoDto> stocksInfo;
+
 }

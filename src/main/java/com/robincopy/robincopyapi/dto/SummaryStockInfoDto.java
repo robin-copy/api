@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class StockSummaryInfo {
+public class SummaryStockInfoDto {
 
     private String stockSymbol;
     private Integer quantity;

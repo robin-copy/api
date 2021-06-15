@@ -1,6 +1,7 @@
 package com.robincopy.robincopyapi;
 
 import com.robincopy.robincopyapi.exceptions.NotFoundException;
+import com.robincopy.robincopyapi.models.Share;
 import com.robincopy.robincopyapi.models.User;
 import com.robincopy.robincopyapi.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -20,17 +21,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest
 class UserTests {
 
-    @Autowired
-    private UserRepository userRepository;
-
     /* USERS
      * New user should have no shares
-     * When adding a share to a user, user shares should include it
-     * When adding a repeated share to a user, user share should increase quantity
-     * When adding different shares to a user, user should include all of them
-     * When removing a share from a user, user shares should not include it
-     * When removing a share from a user(with quantity > 1), user share should decrease quantity
-     * Removing non existing share, should throw error
+     * When buying a share to a user, user shares should include it
+     * When buying a repeated share to a user, user share should increase quantity
+     * When buying different shares to a user, user should include all of them
+     * When selling a share from a user, user shares should not include it
+     * When selling a share from a user(with quantity > 1), user share should decrease quantity
+     * selling non existing share, should throw error
      * ---
      * USERS DB PERSISTENCE
      * When saving a user , it can be read from db
@@ -45,103 +43,78 @@ class UserTests {
     }
 
     @Test
-    void addingShare_ShouldAddToSharesList() {
+    void test01_buyingShare_ShouldAddToSharesList() {
         User user = new User("test", "name");
-        user.addShare(1, 100.0, "TSLA");
+        Share share = new Share(1, user, "TSLA", 100.0);
+        user.buyShare(share);
         assertThat(user.getShares().size()).isEqualTo(1);
-        assertThat(user.getShares().stream().filter(share -> share.getStockSymbol().equals("TSLA")).findFirst()).isPresent();
+        assertThat(getUserShare(user, "TSLA")).isPresent();
     }
 
     @Test
-    void addingRepeatedShare_ShouldIncreaseQuantity() {
+    void test02_buyingRepeatedShare_ShouldIncreaseQuantity() {
         User user = new User("test", "name");
-        user.addShare(1, 100.0, "TSLA");
-        user.addShare( 3, 100.0, "TSLA");
-        assertThat(user.getShares().stream().filter(share -> share.getStockSymbol().equals("TSLA")).findFirst().get().getQuantity()).isEqualTo(4);
+        user.buyShare(new Share(1, user, "TSLA", 100.0));
+        user.buyShare(new Share(3, user, "TSLA", 100.0));
+        Optional<Share> share = getUserShare(user, "TSLA");
+
+        assertThat(share).isPresent();
+        assertThat(share.get().getQuantity()).isEqualTo(4);
     }
 
     @Test
-    void addingDifferentShares_ShouldIncludeAllOfThem() {
+    void test03_buyingDifferentShares_ShouldIncludeAllOfThem() {
         User user = new User("test", "name");
-        user.addShare( 1, 100.0, "TSLA");
-        user.addShare(1, 120.0, "APPL");
+        user.buyShare(new Share(1, user, "TSLA", 100.0));
+        user.buyShare(new Share(1, user, "AAPL", 120.0));
+
         assertThat(user.getShares().size()).isEqualTo(2);
-        assertThat(user.getShares().stream().filter(share -> share.getStockSymbol().equals("TSLA")).findFirst()).isPresent();
-        assertThat(user.getShares().stream().filter(share -> share.getStockSymbol().equals("APPL")).findFirst()).isPresent();
+
+        assertThat(getUserShare(user, "TSLA")).isPresent();
+        assertThat(getUserShare(user, "AAPL")).isPresent();
     }
 
     @Test
-    void removingShare_ShouldRemoveFromSharesList() {
+    void test04_sellingShare_ShouldRemoveFromSharesList() {
         User user = new User("test", "name");
-        user.addShare(1, 100.0, "TSLA");
+        user.buyShare(new Share(1, user, "TSLA", 100.0));
         assertThat(user.getShares().size()).isEqualTo(1);
-        assertThat(user.getShares().stream().filter(share -> share.getStockSymbol().equals("TSLA")).findFirst()).isPresent();
-        user.removeShare("TSLA", 1);
+        assertThat(getUserShare(user, "TSLA")).isPresent();
+
+        user.sellShare(new Share(1, user, "TSLA", 100.0));
         assertThat(user.getShares()).isEmpty();
     }
 
     @Test
-    void removingShare_ShouldDecreaseShareQuantity() {
+    void test05_sellingShare_ShouldDecreaseShareQuantity() {
         User user = new User("test", "name");
-        user.addShare(3, 100.0, "TSLA");
+        user.buyShare(new Share(3, user, "TSLA", 100.0));
+
         assertThat(user.getShares().size()).isEqualTo(1);
-        assertThat(user.getShares().stream().filter(share -> share.getStockSymbol().equals("TSLA")).findFirst().get().getQuantity()).isEqualTo(3);
-        user.removeShare("TSLA", 1);
+        Optional<Share> share = getUserShare(user, "TSLA");
+        assertThat(share).isPresent();
+        assertThat(share.get().getQuantity()).isEqualTo(3);
+
+        user.sellShare(new Share(1, user, "TSLA", 100.0));
+
         assertThat(user.getShares().size()).isEqualTo(1);
-        assertThat(user.getShares().stream().filter(share -> share.getStockSymbol().equals("TSLA")).findFirst().get().getQuantity()).isEqualTo(2);
+        share = getUserShare(user, "TSLA");
+        assertThat(share).isPresent();
+        assertThat(share.get().getQuantity()).isEqualTo(2);
     }
 
     @Test()
-    void removingInvalidShare_ShouldThrowException() {
+    void test06_sellingInvalidShare_ShouldThrowException() {
         User user = new User("name", "lastname");
-        Throwable exception = assertThrows(NotFoundException.class, () -> user.removeShare("TSLA", 1));
+        Share share = new Share(1, user, "TSLA", 100.0);
+
+        Throwable exception = assertThrows(NotFoundException.class, () -> user.sellShare(share));
         assertThat(exception.getMessage()).isEqualTo("Share not found");
     }
 
-    // PERSISTENCE TESTS
 
-    @Test
-    void createdUser_ShouldBePersisted() {
-        User user = new User("name", "lastname");
-        user.addShare( 3, 100.0, "TSLA");
-        user = userRepository.save(user);
-
-        Optional<User> persistedUser = userRepository.findById(user.getId());
-        assertThat(persistedUser).isPresent();
-        assertThat(persistedUser.get().getId()).isEqualTo(user.getId());
-        assertThat(persistedUser.get().getFirstName()).isEqualTo("name");
-        assertThat(persistedUser.get().getLastName()).isEqualTo("lastname");
-        assertThat(persistedUser.get().getShares().get(0).getQuantity()).isEqualTo(3);
-    }
-
-    @Test
-    void deletedUser_ShouldNotBePersisted() {
-        User user = new User("name", "lastname");
-        user = userRepository.save(user);
-
-        userRepository.deleteById(user.getId());
-
-        Optional<User> deletedUser = userRepository.findById(user.getId());
-        assertThat(deletedUser).isEmpty();
-    }
-
-    @Test
-    void modifiedUser_ShouldBePersisted() {
-        User user = new User("name", "lastname");
-        user.addShare( 3, 100.0, "TSLA");
-        user = userRepository.save(user);
-
-        Optional<User> foundUser = userRepository.findById(user.getId());
-        assertThat(foundUser).isPresent();
-        foundUser.get().addShare(2, 120.0, "TSLA");
-        userRepository.save(foundUser.get());
-
-        Optional<User> persistedUser = userRepository.findById(user.getId());
-        assertThat(persistedUser).isPresent();
-        assertThat(persistedUser.get().getId()).isEqualTo(user.getId());
-        assertThat(persistedUser.get().getFirstName()).isEqualTo("name");
-        assertThat(persistedUser.get().getLastName()).isEqualTo("lastname");
-        assertThat(persistedUser.get().getShares().get(0).getQuantity()).isEqualTo(5);
+    private Optional<Share> getUserShare(User user, String symbol) {
+        return user.getShares().stream().filter(share -> share.getStockSymbol().equals(symbol)).findFirst();
     }
 
 }
