@@ -1,3 +1,18 @@
 spring:
   autoconfigure:
     exclude[0]: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    generate-ddl: true
+
+  datasource:
+    url: 'jdbc:postgresql://localhost:5432/postgres'
+    username: 'postgres'
+    password: '${ASECA_PASSWORD}'
+
+server:
+  servlet:
+    context-path: '/api'
+  error:
+    include-message: always

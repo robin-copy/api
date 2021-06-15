@@ -15,9 +15,11 @@ services:
       DB_PORT: 5432
       ASECA_PASSWORD: ${ASECA_PASSWORD}
       DB_USER: postgres
-    limits:
-      cpus: 2
-      memory: 2048M
+    deploy:
+      resources:
+        limits:
+          cpus: 0.25
+          memory: 2048M
 
   user_db:
     container_name: stock_postgres_db
