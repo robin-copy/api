@@ -2,7 +2,9 @@ package com.robincopy.robincopyapi;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.robincopy.robincopyapi.controllers.UserController;
-import com.robincopy.robincopyapi.dto.*;
+import com.robincopy.robincopyapi.dto.share.BuyShareDto;
+import com.robincopy.robincopyapi.dto.share.ShareDto;
+import com.robincopy.robincopyapi.dto.user.UserDto;
 import com.robincopy.robincopyapi.mock.StockMocks;
 import com.robincopy.robincopyapi.services.UserService;
 import org.junit.jupiter.api.Test;
@@ -68,7 +70,7 @@ class UserControllerTests {
      */
 
     @Test
-    void creatingNewUser_ShouldReturnNewUserInfo() throws Exception {
+    void test01_creatingNewUser_ShouldReturnNewUserInfo() throws Exception {
         UserDto user = new UserDto("name", "lastName");
 
         when(userService.addUser(isA(UserDto.class))).thenReturn(user);
@@ -82,10 +84,10 @@ class UserControllerTests {
     }
 
     @Test
-    void addingShares_ShouldUpdateSharesQuantity() throws Exception {
-        ShareAddedDto share = new ShareAddedDto("userId", "TSLA", 5, 500.0);
+    void test02_addingShares_ShouldUpdateSharesQuantity() throws Exception {
+        ShareDto share = new ShareDto("userId", "TSLA", 5, 500.0);
 
-        when(userService.addShare(isA(NewShareDto.class))).thenReturn(share);
+        when(userService.buyShare(isA(BuyShareDto.class))).thenReturn(share);
 
         mockMvc.perform(post("/users/shares")
                 .contentType("application/json")
@@ -96,7 +98,7 @@ class UserControllerTests {
     }
 
     @Test
-    void getUserStocksList_ShouldReturnListOfOwnedStocks() throws Exception {
+    void test03_getUserStocksList_ShouldReturnListOfOwnedStocks() throws Exception {
         when(userService.getUserStockInfo(isA(String.class))).thenReturn(StockMocks.getStockReducedInfos());
 
         mockMvc.perform(get("/users/1hasjg41sj4/shares")
@@ -108,26 +110,26 @@ class UserControllerTests {
     }
 
     @Test
-    void getUserStockInfo_ShouldReturnDetailedInformationAboutStock() throws Exception{
-        when(userService.getUserStockInfo(isA(String.class), isA(String.class))).thenReturn(StockMocks.getStockInfo());
+    void test04_getUserStockInfo_ShouldReturnDetailedInformationAboutStock() throws Exception{
+        when(userService.getUserStockInfo(isA(String.class), isA(String.class))).thenReturn(StockMocks.getStockInfoDto());
 
         mockMvc.perform(get("/users/1hasjg41sj4/shares/TSLA")
                 .contentType("application/json")
-                .content(objectMapper.writeValueAsString(StockMocks.getStockInfo())))
+                .content(objectMapper.writeValueAsString(StockMocks.getStockInfoDto())))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(StockMocks.getStockInfo())))
+                .andExpect(content().json(objectMapper.writeValueAsString(StockMocks.getStockInfoDto())))
                 .andReturn();
     }
 
     @Test
-    void getUserSummary_ShouldReturnUserPortfolioSummary() throws Exception {
-        when(userService.getUserStockSummary(isA(String.class))).thenReturn(StockMocks.getStockSummatyInfo());
+    void test05_getUserSummary_ShouldReturnUserPortfolioSummary() throws Exception {
+        when(userService.getUserStockSummary(isA(String.class))).thenReturn(StockMocks.getPortfolioSummary());
 
         mockMvc.perform(get("/users/1hasjg41sj4/summary")
                 .contentType("application/json")
-                .content(objectMapper.writeValueAsString(StockMocks.getStockSummatyInfo())))
+                .content(objectMapper.writeValueAsString(StockMocks.getPortfolioSummary())))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(StockMocks.getStockSummatyInfo())))
+                .andExpect(content().json(objectMapper.writeValueAsString(StockMocks.getPortfolioSummary())))
                 .andReturn();
     }
 

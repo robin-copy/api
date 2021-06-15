@@ -1,24 +1,23 @@
-package com.robincopy.robincopyapi.dto;
+package com.robincopy.robincopyapi.dto.share;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotNull;
-
-@Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-public class NewShareDto {
+@Builder
+public class ShareDto {
 
-    @NotNull
     private String userId;
 
-    @NotNull
     private String symbol;
 
-    @NotNull
     private Integer quantity;
+
+    private Double price;
+
+
 }

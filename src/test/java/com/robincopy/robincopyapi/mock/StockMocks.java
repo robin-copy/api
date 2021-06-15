@@ -1,6 +1,9 @@
 package com.robincopy.robincopyapi.mock;
 
 import com.robincopy.robincopyapi.dto.*;
+import com.robincopy.robincopyapi.dto.api.StockInfo;
+import com.robincopy.robincopyapi.dto.api.StockHistoricalDetails;
+import com.robincopy.robincopyapi.dto.api.StockQuote;
 import com.robincopy.robincopyapi.models.PriceStatus;
 
 import java.util.ArrayList;
@@ -9,8 +12,8 @@ import java.util.List;
 
 public class StockMocks {
 
-    public static StockInfoDto getStockInfoDto(){
-        return new StockInfoDto(Arrays.asList(450.0, 500.0, 550.0),
+    public static StockHistoricalDetails getStockHistoricalDetails(){
+        return new StockHistoricalDetails(Arrays.asList(450.0, 500.0, 550.0),
                 Arrays.asList(460.0, 510.0, 580.0),
                 Arrays.asList(440.0, 500.0, 540.0),
                 Arrays.asList(445.0, 500.0, 530.0),
@@ -19,45 +22,45 @@ public class StockMocks {
                 Arrays.asList(30.0, 20.0, 50.0));
     }
 
-    public static List<StockReducedInfo> getStockReducedInfos(){
-        List<StockReducedInfo> stocks = new ArrayList<>();
-        List<StockPrice> stockPrices1 = new ArrayList<>();
-        stockPrices1.add(new StockPrice(350.0, 1614718998L));
-        stockPrices1.add(new StockPrice(355.0, 1615842198L));
-        stockPrices1.add(new StockPrice(360.0, 1616533398L));
-        stocks.add(new StockReducedInfo("TSLA", 500.0, stockPrices1, 3, PriceStatus.INCREASED));
-        List<StockPrice> stockPrices2 = new ArrayList<>();
-        stockPrices2.add(new StockPrice(120.0, 1614718998L));
-        stockPrices2.add(new StockPrice(100.0, 1615842198L));
-        stockPrices2.add(new StockPrice(80.0, 1616533398L));
-        stocks.add(new StockReducedInfo("AAPL", 500.0, stockPrices2, 3, PriceStatus.DECREASED));
+    public static List<StockReducedInfoDto> getStockReducedInfos(){
+        List<StockReducedInfoDto> stocks = new ArrayList<>();
+        List<StockPriceDto> stockPrices1Dto = new ArrayList<>();
+        stockPrices1Dto.add(new StockPriceDto(350.0, 1614718998L));
+        stockPrices1Dto.add(new StockPriceDto(355.0, 1615842198L));
+        stockPrices1Dto.add(new StockPriceDto(360.0, 1616533398L));
+        stocks.add(new StockReducedInfoDto("TSLA", 500.0, stockPrices1Dto, 3, PriceStatus.INCREASED));
+        List<StockPriceDto> stockPrices2Dto = new ArrayList<>();
+        stockPrices2Dto.add(new StockPriceDto(120.0, 1614718998L));
+        stockPrices2Dto.add(new StockPriceDto(100.0, 1615842198L));
+        stockPrices2Dto.add(new StockPriceDto(80.0, 1616533398L));
+        stocks.add(new StockReducedInfoDto("AAPL", 500.0, stockPrices2Dto, 3, PriceStatus.DECREASED));
         return stocks;
     }
 
-    public static StockQuoteInfo getStockQuoteInfo(){
-        return new StockQuoteInfo(510.0, 505.0, 490.0, 495.0, 494.0, 1616533398L);
+    public static StockQuote getStockQuote(){
+        return new StockQuote(510.0, 505.0, 490.0, 495.0, 494.0, 1616533398L);
     }
 
-
-    public static StockDetails getStockDetails() {
-        return new StockDetails(500000L, "https://tesla.com", "Automobile", "Tesla", "TSLA");
-    }
-
-    public static List<StockPrice> getStockPrices() {
-        List<StockPrice> stockPrices = new ArrayList<>();
-        stockPrices.add(new StockPrice(350.0, 1614718998L));
-        stockPrices.add(new StockPrice(355.0, 1615842198L));
-        stockPrices.add(new StockPrice(360.0, 1616533398L));
-        return stockPrices;
-    }
 
     public static StockInfo getStockInfo() {
-        return StockInfo.builder()
+        return new StockInfo(500000L, "https://tesla.com", "Automobile", "Tesla", "TSLA");
+    }
+
+    public static List<StockPriceDto> getStockPrices() {
+        List<StockPriceDto> stockPriceDtos = new ArrayList<>();
+        stockPriceDtos.add(new StockPriceDto(350.0, 1614718998L));
+        stockPriceDtos.add(new StockPriceDto(355.0, 1615842198L));
+        stockPriceDtos.add(new StockPriceDto(360.0, 1616533398L));
+        return stockPriceDtos;
+    }
+
+    public static StockInfoDto getStockInfoDto() {
+        return StockInfoDto.builder()
                 .companyName("Tesla")
                 .stockSymbol("TSLA")
-                .dayProfit(6.0) //define
+                .dayProfit(6.0)
                 .price(500.0)
-                .stockPrices(getStockPrices())
+                .stockPriceDtos(getStockPrices())
                 .openValue(480.0)
                 .dayLow(470.0)
                 .dayHigh(520.0)
@@ -75,22 +78,17 @@ public class StockMocks {
 
     }
 
-    public static StockSummary getStockSummatyInfo() {
-        List<StockSummaryInfo> summaryInfos = new ArrayList<>();
-        summaryInfos.add(new StockSummaryInfo("TSLA", 5, 500.0, 5.0, 10.0, 100.0, 50.0));
-        summaryInfos.add(new StockSummaryInfo("FB", 2, 50.0, 3.0, 4.0, 50.0, 20.0));
-        summaryInfos.add(new StockSummaryInfo("AAPL", 4, 170.0, -1.0, -3.0, 80.0, 30.0));
-        return new StockSummary(5000.0, 15.0, summaryInfos);
+    public static PortfolioSummaryDto getPortfolioSummary() {
+        List<SummaryStockInfoDto> summaryInfos = new ArrayList<>();
+        summaryInfos.add(new SummaryStockInfoDto("TSLA", 5, 500.0, 5.0, 10.0, 100.0, 50.0));
+        summaryInfos.add(new SummaryStockInfoDto("FB", 2, 50.0, 3.0, 4.0, 50.0, 20.0));
+        summaryInfos.add(new SummaryStockInfoDto("AAPL", 4, 170.0, -1.0, -3.0, 80.0, 30.0));
+        return new PortfolioSummaryDto(5000.0, 15.0, summaryInfos);
     }
 
-    public static StockSummary getStockSummary() {
-        List<StockSummaryInfo> stockSummaryInfos = getStockSummaryInfos();
-        return new StockSummary(2000.0, 5.0, stockSummaryInfos);
-    }
-
-    public static List<StockSummaryInfo> getStockSummaryInfos() {
-        List<StockSummaryInfo> infos = new ArrayList<>();
-        infos.add(new StockSummaryInfo("TSLA", 4, 500.0, 4.0, 10.0, 20.0, 40.0));
+    public static List<SummaryStockInfoDto> getStockSummaries() {
+        List<SummaryStockInfoDto> infos = new ArrayList<>();
+        infos.add(new SummaryStockInfoDto("TSLA", 4, 500.0, 4.0, 10.0, 20.0, 40.0));
         return infos;
     }
 }

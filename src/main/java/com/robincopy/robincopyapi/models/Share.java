@@ -1,6 +1,7 @@
 package com.robincopy.robincopyapi.models;
 
-import com.robincopy.robincopyapi.dto.ShareAddedDto;
+import com.robincopy.robincopyapi.dto.share.BuyShareDto;
+import com.robincopy.robincopyapi.dto.share.ShareDto;
 import com.robincopy.robincopyapi.exceptions.BadRequestException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,8 +27,12 @@ public class Share extends AbstractEntity{
 
     private Double averageBuyPrice;
 
-    public ShareAddedDto toDto() {
-        return new ShareAddedDto(holder.getId(), stockSymbol, quantity, averageBuyPrice);
+    public static Share from(BuyShareDto buyShareDto, Double buyPrice, User user) {
+        return new Share(buyShareDto.getQuantity(), user, buyShareDto.getSymbol(), buyPrice);
+    }
+
+    public ShareDto toDto() {
+        return new ShareDto(holder.getId(), stockSymbol, quantity, averageBuyPrice);
     }
 
     public void increaseQuantity(int amount, Double price) {
