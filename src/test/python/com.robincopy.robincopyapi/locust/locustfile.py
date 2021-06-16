@@ -56,6 +56,11 @@ class MockedFinnHubWebUser(HttpUser):
     wait_time = between(3, 5)
 
 
-class RealFinnHubWebUser(HttpUser):
+class RealFinnHubWebUserGetShares(HttpUser):
     tasks = [FinnHubApiGetShares]
+    wait_time = between(30, 32)
+
+
+class RealFinnHubWebUserBuyShares(HttpUser):
+    tasks = [FinnHubApiBuyShare]
     wait_time = between(30, 32)
