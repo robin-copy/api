@@ -31,7 +31,7 @@ public class PortfolioIndicatorsCalculator {
                 .profit(profit)
                 .profitPercentage(getAvgProfitPercentage(share.getAverageBuyPrice(), stockQuote.getC()))
                 .price(stockQuote.getC())
-                .stockPriceDtos(getStockPrices(stockHistoricalDetails, stockHistoricalDetails.getC().size()))
+                .stockPrices(getStockPrices(stockHistoricalDetails, stockHistoricalDetails.getC().size()))
                 .openValue(stockQuote.getO())
                 .dayHigh(stockQuote.getH())
                 .dayLow(stockQuote.getL())
