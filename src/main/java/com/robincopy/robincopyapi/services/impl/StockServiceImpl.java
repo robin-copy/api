@@ -29,7 +29,7 @@ public class StockServiceImpl implements StockService {
     static final long MILLISECONDS_IN_YEAR = (long) 1000 * 60 * 60 * 24 * 365;
 
 
-    @Value("${MOCKED_EXTERNAL_API}")
+    @Value("${MOCKED_EXTERNAL_API:false}")
     private boolean mocked;
 
     @Autowired
