@@ -11,7 +11,7 @@ class FinnHubApiGetShares(TaskSet):
 
 
 class FinnHubApiBuyShare(TaskSet):
-    user_id = "4028b8817a118a78017a118a7b7c0000"
+    user_id = "2c9380837a0dba89017a0dba90560000"
 
     @task
     def buy_share(self):

@@ -14,6 +14,7 @@ services:
       DB_HOST: stock_postgres_db
       DB_PORT: 5432
       ASECA_PASSWORD: ${ASECA_PASSWORD}
+      MOCKED_EXTERNAL_API: ${MOCKED_EXTERNAL_API}
       DB_USER: postgres
       MOCKED_EXTERNAL_API: ${MOCKED_EXTERNAL_API}
     deploy:
