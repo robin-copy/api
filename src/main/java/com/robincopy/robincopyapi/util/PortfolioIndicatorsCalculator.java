@@ -19,7 +19,10 @@ import java.util.stream.Collectors;
 @Component
 public class PortfolioIndicatorsCalculator {
 
-    public static StockInfoDto getStockInfo(Share share, StockHistoricalDetails stockHistoricalDetails, StockInfo stockInfo, StockQuote stockQuote) {
+    public static StockInfoDto getStockInfo(Share share, StockRepository stockRepository, long startTime, long endTime, String resolution) {
+        StockHistoricalDetails stockHistoricalDetails = stockRepository.getStockInfo(share.getStockSymbol(), startTime, endTime, resolution);
+        StockInfo stockInfo = stockRepository.getStockDetails(share.getStockSymbol());
+        StockQuote stockQuote = stockRepository.getStockQuote(share.getStockSymbol());
         List<Double> closePrices = stockHistoricalDetails.getC();
         Double profit = getProfit(share.getAverageBuyPrice(), share.getQuantity(), stockQuote.getC());
         return StockInfoDto.builder()
@@ -44,7 +47,9 @@ public class PortfolioIndicatorsCalculator {
                 .build();
     }
 
-    public static StockReducedInfoDto getStockReducedInfo(Share share, int length, StockHistoricalDetails stockHistoricalDetails, StockQuote stockQuote) {
+    public static StockReducedInfoDto getStockReducedInfo(Share share, int length, StockRepository stockRepository, long startTime, long endTime, String resolution) {
+        StockHistoricalDetails stockHistoricalDetails = stockRepository.getStockInfo(share.getStockSymbol(), startTime, endTime, resolution);
+        StockQuote stockQuote = stockRepository.getStockQuote(share.getStockSymbol());
         PriceStatus status = stockQuote.getO() > stockQuote.getC() ? PriceStatus.DECREASED :
                 (stockQuote.getO().equals(stockQuote.getC()) ? PriceStatus.EQUAL : PriceStatus.INCREASED);
         return StockReducedInfoDto.builder()

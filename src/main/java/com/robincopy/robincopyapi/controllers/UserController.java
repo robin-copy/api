@@ -15,12 +15,8 @@ import java.util.List;
 @RequestMapping("users")
 public class UserController {
 
-    private final UserService userService;
-
     @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+    private UserService userService;
 
     @PostMapping
     public UserDto addUser(@RequestBody @Valid UserDto userDto){

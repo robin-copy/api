@@ -1,136 +1,115 @@
 package com.robincopy.robincopyapi;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.robincopy.robincopyapi.controllers.UserController;
-import com.robincopy.robincopyapi.dto.share.BuyShareDto;
+import com.robincopy.robincopyapi.dto.PortfolioSummaryDto;
+import com.robincopy.robincopyapi.dto.StockInfoDto;
+import com.robincopy.robincopyapi.dto.StockReducedInfoDto;
 import com.robincopy.robincopyapi.dto.share.ShareDto;
 import com.robincopy.robincopyapi.dto.user.UserDto;
-import com.robincopy.robincopyapi.mock.StockMocks;
-import com.robincopy.robincopyapi.services.UserService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.RestTemplate;
 
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import java.util.List;
 
-@ExtendWith(SpringExtension.class)
-@WebMvcTest(controllers = UserController.class)
+import static org.assertj.core.api.Assertions.assertThat;
+
+
+@RunWith(SpringRunner.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UserControllerTests {
 
-    @Autowired
-    private MockMvc mockMvc;
+    @LocalServerPort
+    int randomServerPort;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private String path;
 
-    @MockBean
-    UserService userService;
+    private final RestTemplate restTemplate = new RestTemplate();
 
+    @BeforeEach
+    public void startup(){
+        this.path = "http://localhost:" + randomServerPort;
+    }
 
     /* TEST INTERNAL API, testing controller is effectively receiving requests and delegating processing to service
          * Creating a user should return created user info
          * Adding shares, should update owned shares
-         * Getting user shares list, should return owned shares and the following information
-                    * Stock Symbol
-                    * Price
-                    * Price History for the last 10 days (in order to make a graph)
-                    * Shares on hold
-                    * Price Status (it increased, decreased or remained equal during the current day)
-        * Getting user stock details, should return the following information
-                    * Company name
-                    * Daily profit ($)
-                    * Past year stock price history
-                    * Actual price
-                    * Open value
-                    * Day low
-                    * Day high
-                    * Year high
-                    * Year low
-                    * Average Sales Volume
-                    * Price/Earning ratio
-                    * Dividend Yield
-                    * Market capitalization
-                    * Company Description
-                    * Total Profit
-                    * Profit Percentage
-                    * Daily variation (%)
-        * Getting user stocks summary, should return user portfolio summary, including the following information
-                    * List of the owned shares, including symbol, quantity owned, last stock price, daily variation ($, %), total variation and total winnings for the given stock
-                    * Total balance (sum of owned shares prices)
-                    * Winning percentage
+         * Getting user shares list, should return owned shares
+         * Getting user stock details
+         * Getting user stocks summary, should return user portfolio summary
      */
 
     @Test
-    void test01_creatingNewUser_ShouldReturnNewUserInfo() throws Exception {
+    void test01_creatingNewUser_ShouldReturnNewUserInfo() {
         UserDto user = new UserDto("name", "lastName");
 
-        when(userService.addUser(isA(UserDto.class))).thenReturn(user);
-
-        mockMvc.perform(post("/users")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(user)))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(user)))
-                .andReturn();
+        HttpEntity<UserDto> body = new HttpEntity<>(user);
+        ResponseEntity<UserDto> response = restTemplate.exchange(path + "/users", HttpMethod.POST, body, UserDto.class);
+        assertThat(response.getStatusCode().value()).isEqualTo(200);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getFirstName()).isEqualTo(user.getFirstName());
     }
 
     @Test
-    void test02_addingShares_ShouldUpdateSharesQuantity() throws Exception {
-        ShareDto share = new ShareDto("userId", "TSLA", 5, 500.0);
+    void test02_addingShares_ShouldAddShareToUser() {
+        UserDto user = new UserDto("name", "lastName");
+        ShareDto share = new ShareDto(getUserId(user), "TSLA", 5, 500.0);
 
-        when(userService.buyShare(isA(BuyShareDto.class))).thenReturn(share);
-
-        mockMvc.perform(post("/users/shares")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(share)))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(share)))
-                .andReturn();
+        HttpEntity<ShareDto> body = new HttpEntity<>(share);
+        ResponseEntity<ShareDto> response = restTemplate.exchange(path + "/users/shares", HttpMethod.POST, body, ShareDto.class);
+        assertThat(response.getStatusCode().value()).isEqualTo(200);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getSymbol()).isEqualTo("TSLA");
     }
 
     @Test
-    void test03_getUserStocksList_ShouldReturnListOfOwnedStocks() throws Exception {
-        when(userService.getUserStockInfo(isA(String.class))).thenReturn(StockMocks.getStockReducedInfos());
+    void test03_getUserStocksList_ShouldReturnListOfOwnedStocks() {
+        UserDto user = new UserDto("name", "lastName");
 
-        mockMvc.perform(get("/users/1hasjg41sj4/shares")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(StockMocks.getStockReducedInfos())))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(StockMocks.getStockReducedInfos())))
-                .andReturn();
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<StockReducedInfoDto> entity = new HttpEntity<>(headers);
+        ResponseEntity<List<StockReducedInfoDto>> response = restTemplate.exchange(path + "/users/" + getUserId(user) + "/shares", HttpMethod.GET, entity, new ParameterizedTypeReference<List<StockReducedInfoDto>>() {});
+        assertThat(response.getStatusCode().value()).isEqualTo(200);
     }
 
     @Test
-    void test04_getUserStockInfo_ShouldReturnDetailedInformationAboutStock() throws Exception{
-        when(userService.getUserStockInfo(isA(String.class), isA(String.class))).thenReturn(StockMocks.getStockInfoDto());
+    void test04_getUserStockInfo_ShouldReturnDetailedInformationAboutStock() {
+        UserDto user = new UserDto("name", "lastName");
+        String userId = getUserId(user);
+        addShare(new ShareDto(userId, "TSLA", 3, 500.0));
 
-        mockMvc.perform(get("/users/1hasjg41sj4/shares/TSLA")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(StockMocks.getStockInfoDto())))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(StockMocks.getStockInfoDto())))
-                .andReturn();
+        ResponseEntity<StockInfoDto> response = restTemplate.getForEntity(path + "/users/" + userId + "/shares/TSLA", StockInfoDto.class);
+        assertThat(response.getStatusCode().value()).isEqualTo(200);
     }
 
     @Test
-    void test05_getUserSummary_ShouldReturnUserPortfolioSummary() throws Exception {
-        when(userService.getUserStockSummary(isA(String.class))).thenReturn(StockMocks.getPortfolioSummary());
+    void test05_getUserSummary_ShouldReturnUserPortfolioSummary() {
+        UserDto user = new UserDto("name", "lastName");
 
-        mockMvc.perform(get("/users/1hasjg41sj4/summary")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(StockMocks.getPortfolioSummary())))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(StockMocks.getPortfolioSummary())))
-                .andReturn();
+        ResponseEntity<PortfolioSummaryDto> response = restTemplate.getForEntity(path + "/users/" + getUserId(user) + "/summary", PortfolioSummaryDto.class);
+        assertThat(response.getStatusCode().value()).isEqualTo(200);
     }
 
+
+
+    private String getUserId(UserDto user){
+        HttpEntity<UserDto> body = new HttpEntity<>(user);
+        ResponseEntity<UserDto> response = restTemplate.exchange(path + "/users", HttpMethod.POST, body, UserDto.class);
+        return response.getBody().getUserId();
+    }
+
+    private void addShare(ShareDto shareDto){
+        HttpEntity<ShareDto> body = new HttpEntity<>(shareDto);
+        restTemplate.exchange(path + "/users/shares", HttpMethod.POST, body, ShareDto.class);
+    }
 }

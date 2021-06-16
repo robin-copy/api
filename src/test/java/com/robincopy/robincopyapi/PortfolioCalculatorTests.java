@@ -5,7 +5,6 @@ import com.robincopy.robincopyapi.dto.StockInfoDto;
 import com.robincopy.robincopyapi.dto.StockReducedInfoDto;
 import com.robincopy.robincopyapi.dto.SummaryStockInfoDto;
 import com.robincopy.robincopyapi.mock.FakeStockInfoRepository;
-import com.robincopy.robincopyapi.mock.StockMocks;
 import com.robincopy.robincopyapi.models.PriceStatus;
 import com.robincopy.robincopyapi.models.Share;
 import com.robincopy.robincopyapi.models.User;
@@ -21,14 +20,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest
-public class PortfolioCalculatorTests {
+class PortfolioCalculatorTests {
+
+    static final long START_TIME = 1592257937L;
+    static final long END_TIME = 1623793828L;
+
+    private final FakeStockInfoRepository fakeStockInfoRepository = new FakeStockInfoRepository();
 
     @Test
     void test01_TestIndicatorCalculator_ReturningCorrectDailyProfit() {
         User user = new User("firstname", "lastname");
         Share share = new Share(5, user, "TSLA", 500.0);
 
-        StockInfoDto indicators = PortfolioIndicatorsCalculator.getStockInfo(share, StockMocks.getStockHistoricalDetails(), StockMocks.getStockInfo(), StockMocks.getStockQuote());
+        StockInfoDto indicators = PortfolioIndicatorsCalculator.getStockInfo(share, fakeStockInfoRepository, START_TIME, END_TIME,"D");
         assertThat(indicators.getDayProfit()).isEqualTo(75.0);
     }
 
@@ -37,7 +41,7 @@ public class PortfolioCalculatorTests {
         User user = new User("firstname", "lastname");
         Share share = new Share(5, user, "TSLA", 500.0);
 
-        StockInfoDto indicators = PortfolioIndicatorsCalculator.getStockInfo(share, StockMocks.getStockHistoricalDetails(), StockMocks.getStockInfo(), StockMocks.getStockQuote());
+        StockInfoDto indicators = PortfolioIndicatorsCalculator.getStockInfo(share, fakeStockInfoRepository, START_TIME, END_TIME,"D");
         assertThat(indicators.getPrice()).isEqualTo(510.0);
     }
 
@@ -46,7 +50,7 @@ public class PortfolioCalculatorTests {
         User user = new User("firstname", "lastname");
         Share share = new Share(5, user, "TSLA", 500.0);
 
-        StockInfoDto indicators = PortfolioIndicatorsCalculator.getStockInfo(share, StockMocks.getStockHistoricalDetails(), StockMocks.getStockInfo(), StockMocks.getStockQuote());
+        StockInfoDto indicators = PortfolioIndicatorsCalculator.getStockInfo(share, fakeStockInfoRepository, START_TIME, END_TIME,"D");
         assertThat(indicators.getYearHigh()).isEqualTo(580.0);
     }
 
@@ -55,7 +59,7 @@ public class PortfolioCalculatorTests {
         User user = new User("firstname", "lastname");
         Share share = new Share(5, user, "TSLA", 500.0);
 
-        StockInfoDto indicators = PortfolioIndicatorsCalculator.getStockInfo(share, StockMocks.getStockHistoricalDetails(), StockMocks.getStockInfo(), StockMocks.getStockQuote());
+        StockInfoDto indicators = PortfolioIndicatorsCalculator.getStockInfo(share, fakeStockInfoRepository, START_TIME, END_TIME,"D");
         assertThat(indicators.getYearLow()).isEqualTo(460.0);
     }
 
@@ -64,7 +68,7 @@ public class PortfolioCalculatorTests {
         User user = new User("firstname", "lastname");
         Share share = new Share(5, user, "TSLA", 500.0);
 
-        StockInfoDto indicators = PortfolioIndicatorsCalculator.getStockInfo(share, StockMocks.getStockHistoricalDetails(), StockMocks.getStockInfo(), StockMocks.getStockQuote());
+        StockInfoDto indicators = PortfolioIndicatorsCalculator.getStockInfo(share, fakeStockInfoRepository, START_TIME, END_TIME,"D");
         assertThat(indicators.getAvgVolume()).isEqualTo(33.333333333333336);
     }
 
@@ -73,7 +77,7 @@ public class PortfolioCalculatorTests {
         User user = new User("firstname", "lastname");
         Share share = new Share(5, user, "TSLA", 500.0);
 
-        StockInfoDto indicators = PortfolioIndicatorsCalculator.getStockInfo(share, StockMocks.getStockHistoricalDetails(), StockMocks.getStockInfo(), StockMocks.getStockQuote());
+        StockInfoDto indicators = PortfolioIndicatorsCalculator.getStockInfo(share, fakeStockInfoRepository, START_TIME, END_TIME,"D");
         assertThat(indicators.getPeRatio()).isEqualTo(10.2);
     }
 
@@ -82,7 +86,7 @@ public class PortfolioCalculatorTests {
         User user = new User("firstname", "lastname");
         Share share = new Share(5, user, "TSLA", 500.0);
 
-        StockInfoDto indicators = PortfolioIndicatorsCalculator.getStockInfo(share, StockMocks.getStockHistoricalDetails(), StockMocks.getStockInfo(), StockMocks.getStockQuote());
+        StockInfoDto indicators = PortfolioIndicatorsCalculator.getStockInfo(share, fakeStockInfoRepository, START_TIME, END_TIME,"D");
         assertThat(indicators.getDivYield()).isEqualTo(498.921568627451);
     }
 
@@ -91,7 +95,7 @@ public class PortfolioCalculatorTests {
         User user = new User("firstname", "lastname");
         Share share = new Share(5, user, "TSLA", 500.0);
 
-        StockInfoDto indicators = PortfolioIndicatorsCalculator.getStockInfo(share, StockMocks.getStockHistoricalDetails(), StockMocks.getStockInfo(), StockMocks.getStockQuote());
+        StockInfoDto indicators = PortfolioIndicatorsCalculator.getStockInfo(share, fakeStockInfoRepository, START_TIME, END_TIME,"D");
         assertThat(indicators.getProfit()).isEqualTo(50.0);
     }
 
@@ -100,7 +104,7 @@ public class PortfolioCalculatorTests {
         User user = new User("firstname", "lastname");
         Share share = new Share(5, user, "TSLA", 500.0);
 
-        StockInfoDto indicators = PortfolioIndicatorsCalculator.getStockInfo(share, StockMocks.getStockHistoricalDetails(), StockMocks.getStockInfo(), StockMocks.getStockQuote());
+        StockInfoDto indicators = PortfolioIndicatorsCalculator.getStockInfo(share, fakeStockInfoRepository, START_TIME, END_TIME,"D");
         assertThat(indicators.getProfitPercentage()).isEqualTo(2.0);
     }
 
@@ -109,7 +113,7 @@ public class PortfolioCalculatorTests {
         User user = new User("firstname", "lastname");
         Share share = new Share(5, user, "TSLA", 500.0);
 
-        StockInfoDto indicators = PortfolioIndicatorsCalculator.getStockInfo(share, StockMocks.getStockHistoricalDetails(), StockMocks.getStockInfo(), StockMocks.getStockQuote());
+        StockInfoDto indicators = PortfolioIndicatorsCalculator.getStockInfo(share, fakeStockInfoRepository, START_TIME, END_TIME,"D");
         assertThat(indicators.getDayVariationPercentage()).isEqualTo(3.1372549019607843);
     }
 
@@ -119,7 +123,7 @@ public class PortfolioCalculatorTests {
         User user = new User("firstname", "lastname");
         Share share = new Share(5, user, "TSLA", 500.0);
 
-        StockReducedInfoDto stockReducedInfoDto = PortfolioIndicatorsCalculator.getStockReducedInfo(share, 3, StockMocks.getStockHistoricalDetails(), StockMocks.getStockQuote());
+        StockReducedInfoDto stockReducedInfoDto = PortfolioIndicatorsCalculator.getStockReducedInfo(share, 3, fakeStockInfoRepository, START_TIME, END_TIME, "D");
         assertThat(stockReducedInfoDto.getPriceStatus()).isEqualTo(PriceStatus.INCREASED);
     }
 

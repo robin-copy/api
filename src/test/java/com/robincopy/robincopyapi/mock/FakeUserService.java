@@ -9,7 +9,7 @@ import com.robincopy.robincopyapi.services.UserService;
 import java.util.List;
 
 public class FakeUserService implements UserService {
-    public FakeUserService(){}
+
     @Override
     public ShareDto buyShare(BuyShareDto buyShareDto) {
         return new ShareDto(buyShareDto.getUserId(), buyShareDto.getSymbol(), buyShareDto.getQuantity(), 500.0);
