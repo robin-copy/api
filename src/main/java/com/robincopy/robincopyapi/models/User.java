@@ -1,8 +1,9 @@
 package com.robincopy.robincopyapi.models;
 
-import com.robincopy.robincopyapi.dto.UserDto;
+import com.robincopy.robincopyapi.dto.user.UserDto;
 import com.robincopy.robincopyapi.exceptions.BadRequestException;
 import com.robincopy.robincopyapi.exceptions.NotFoundException;
+import com.robincopy.robincopyapi.repositories.UserRepository;
 import lombok.*;
 
 import javax.persistence.*;
@@ -35,7 +36,9 @@ public class User extends AbstractEntity {
         this.investedBalance = 0.0;
     }
 
-    public static User from(UserDto userDto) {
+    public static User from(UserDto userDto, UserRepository userRepository) {
+        if(userRepository.existsByFirstNameAndLastName(userDto.getFirstName(), userDto.getLastName())) throw new BadRequestException("User already exists");
+
         return User.builder()
                 .firstName(userDto.getFirstName())
                 .lastName(userDto.getLastName())
@@ -43,26 +46,21 @@ public class User extends AbstractEntity {
                 .build();
     }
 
-    public void addShare(int quantity, Double price, String stockSymbol) {
-        investedBalance += (price * quantity);
-        Optional<Share> share = shares.stream().filter(share1 -> share1.getStockSymbol().equals(stockSymbol)).findFirst();
-        if (share.isPresent()) share.get().increaseQuantity(quantity, price);
-        else shares.add(new Share(quantity, this, stockSymbol, price));
+    public void buyShare(Share share) {
+        investedBalance += (share.getAverageBuyPrice() * share.getQuantity());
+        Optional<Share> found = findShareBySymbol(share.getStockSymbol());
+        if (found.isPresent()) found.get().increaseQuantity(share.getQuantity(), share.getAverageBuyPrice());
+        else shares.add(share);
     }
 
-    public void removeShare(String stockSymbol, int quantity) {
-        Share share = shares.stream().filter(share1 -> share1.getStockSymbol().equals(stockSymbol)).findFirst().orElseThrow(() -> new NotFoundException("Share not found"));
-        if (share.getQuantity() - quantity > 0) share.decreaseQuantity(quantity);
-        else if (share.getQuantity() - quantity == 0) shares.remove(share);
+    public void sellShare(Share share) {
+        Share toRemove = findShareBySymbol(share.getStockSymbol()).orElseThrow(() -> new NotFoundException("Share not found"));
+        if (toRemove.getQuantity() - share.getQuantity() > 0) toRemove.decreaseQuantity(share.getQuantity());
+        else if (toRemove.getQuantity() - share.getQuantity() == 0) shares.remove(toRemove);
         else throw new BadRequestException("Not enough shares");
     }
 
-    public Double getAverageSharePrice(String shareId) {
-        Share found = shares.stream().filter(share -> share.getId().equals(shareId)).findFirst().orElseThrow(() -> new NotFoundException("Share not found"));
-        return found.getAverageBuyPrice();
-    }
-
-    public Share getShare(String shareId) {
-        return shares.stream().filter(share -> share.getId().equals(shareId)).findFirst().orElseThrow(() -> new NotFoundException("Share not found"));
+    private Optional<Share> findShareBySymbol(String symbol) {
+        return shares.stream().filter(share1 -> share1.getStockSymbol().equals(symbol)).findFirst();
     }
 }

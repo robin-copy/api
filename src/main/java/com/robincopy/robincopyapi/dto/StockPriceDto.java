@@ -5,16 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class StockSummary {
-
-    private Double balance;
-    private Double increasePercentage;
-    private List<StockSummaryInfo> stocksInfo;
-
+public class StockPriceDto {
+    private Double price;
+    private Long date;
 }

@@ -13,11 +13,22 @@ import java.util.List;
 @Builder
 public class StockInfoDto {
 
-    List<Double> c;
-    List<Double> h;
-    List<Double> l;
-    List<Double> o;
-    List<Long> t;
-    String s;
-    List<Double> v;
+    private String companyName;
+    private String stockSymbol;
+    private Double dayProfit;
+    private Double price;
+    private List<StockPriceDto> stockPrices;
+    private Double openValue;
+    private Double dayHigh;
+    private Double dayLow;
+    private Double yearHigh;
+    private Double yearLow;
+    private Double avgVolume;
+    private Double peRatio;
+    private Double divYield;
+    private Long marketCap;
+    private String companyDescription;
+    private Double profit;
+    private Double profitPercentage;
+    private Double dayVariationPercentage;
 }

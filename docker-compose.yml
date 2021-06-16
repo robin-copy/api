@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+  stock_service:
+    image: robincopi
+    container_name: stock-service
+    build:
+      context: .
+      dockerfile: Dockerfile.multi
+    ports:
+      - 8080:8080
+    environment:
+      FINNHUB_TOKEN: c2rgh8aad3iets16v0h0
+      DB_NAME: postgres
+      DB_HOST: aseca_stack_user_db
+      DB_PORT: 5432
+      ASECA_PASSWORD: aseca2021
+      MOCKED_EXTERNAL_API: "true"
+      DB_USER: postgres
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 512m
+
+  user_db:
+    container_name: stock_postgres_db
+    image: postgres:12
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: aseca2021
+      POSTGRES_DB: postgres
+    volumes:
+      - pgdata_stock:/var/lib/postgresql/data
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 512m
+
+volumes:
+  pgdata_stock:
+    external: true
