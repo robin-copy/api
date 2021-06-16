@@ -16,8 +16,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      FINNHUB_TOKEN: 'c35449iad3idcjopf9vg'
-      MOCKED_EXTERNAL_API: 'false'
+      FINNHUB_TOKEN: c35449iad3idcjopf9vg
+      MOCKED_EXTERNAL_API: false
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 11
