@@ -31,9 +31,9 @@ public class StartupRunner {
         Optional<User> user = userRepository.findByFirstNameAndLastName("Juan", "Perez");
         if (user.isEmpty()) {
             User createdUser = new User("Juan", "Perez");
-            createdUser.buyShare(new Share(4, createdUser, "TSLA", 200.0));
-            createdUser.buyShare(new Share(5, createdUser, "FB", 500.0));
-            createdUser.buyShare(new Share(2, createdUser, "AAPL", 1000.0));
+            createdUser.buyShare(new Share(4, createdUser, "TSLA", 580.0));
+            createdUser.buyShare(new Share(5, createdUser, "FB", 340.0));
+            createdUser.buyShare(new Share(2, createdUser, "AAPL", 130.0));
             createdUser = userRepository.save(createdUser);
             logger.info("User with id: " + createdUser.getId());
         } else {

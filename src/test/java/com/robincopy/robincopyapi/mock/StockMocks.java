@@ -60,7 +60,7 @@ public class StockMocks {
                 .stockSymbol("TSLA")
                 .dayProfit(6.0)
                 .price(500.0)
-                .stockPriceDtos(getStockPrices())
+                .stockPrices(getStockPrices())
                 .openValue(480.0)
                 .dayLow(470.0)
                 .dayHigh(520.0)

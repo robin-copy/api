@@ -17,7 +17,7 @@ public class StockInfoDto {
     private String stockSymbol;
     private Double dayProfit;
     private Double price;
-    private List<StockPriceDto> stockPriceDtos;
+    private List<StockPriceDto> stockPrices;
     private Double openValue;
     private Double dayHigh;
     private Double dayLow;
