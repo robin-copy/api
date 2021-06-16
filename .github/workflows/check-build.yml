@@ -24,3 +24,6 @@ jobs:
           distribution: 'adopt'
       - name: Build with Gradle
         run: ./gradlew build
+        env:
+          FINNHUB_TOKEN: c35449iad3idcjopf9vg
+          MOCKED_EXTERNAL_API: false
