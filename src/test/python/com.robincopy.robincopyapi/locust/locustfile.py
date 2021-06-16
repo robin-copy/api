@@ -1,32 +1,40 @@
 import uuid
-from locust import HttpUser, task, TaskSet, between
+from locust import HttpUser, task, TaskSet, between, SequentialTaskSet
 
+user_id = "2c9280837a0ddd12017a0ddd4b2c0000"
 
 class FinnHubApiGetShares(TaskSet):
-    user_id = "4028b8817a118a78017a118a7b7c0000"
-
     @task
     def get_shares(self):
-        self.client.get("/api/users/{}/shares".format(self.user_id), name="get shares")
+        self.client.get("/api/users/{}/shares".format(user_id),
+                        headers={"Accept-Encoding": "*", "Connection": "keep-alive"},
+                        name="get shares")
 
 
 class FinnHubApiBuyShare(TaskSet):
-    user_id = "2c9380837a0dba89017a0dba90560000"
-
     @task
     def buy_share(self):
         self.client.post(url="/api/users/shares",
-                         json={"userId": self.user_id, "symbol": "TSLA", "quantity": "2"},
+                         json={"userId": user_id, "symbol": "TSLA", "quantity": "2"},
                          headers={"Content-Type": "application/json"}, name="buy share")
 
 
 class FinnHubApiGetUserShareInfoByStockSymbol(TaskSet):
-    user_id = "4028b8817a118a78017a118a7b7c0000"
     stock_symbol = "TSLA"
 
     @task
     def get_share_info_by_stock_symbol(self):
-        self.client.get("/api/users/{}/shares/{}".format(self.user_id, self.stock_symbol), name="get shares")
+        self.client.get("/api/users/{}/shares/{}".format(user_id, self.stock_symbol),
+                        name="get share info by stock symbol")
+
+
+class FinnHubApiGetUserSharesSummary(TaskSet):
+    stock_symbol = "TSLA"
+
+    @task
+    def get_user_shares_summary(self):
+        self.client.get("/api/users/{}/shares/{}".format(user_id, self.stock_symbol),
+                        name="get user shares summary")
 
 
 class CreateUser(TaskSet):
@@ -37,15 +45,16 @@ class CreateUser(TaskSet):
                          headers={"Content-Type": "application/json"}, name="create new user")
 
 
-class UserTaskSet(TaskSet):
-    tasks = {CreateUser: 1, FinnHubApiGetShares: 5}
+class RobinCopyTaskSet(TaskSet):
+    tasks = {CreateUser: 1, FinnHubApiGetShares: 30, FinnHubApiBuyShare: 40,
+             FinnHubApiGetUserShareInfoByStockSymbol: 50, FinnHubApiGetUserSharesSummary: 30}
 
 
-class WebUser(HttpUser):
-    tasks = [UserTaskSet]
-    wait_time = between(2, 3)
+class MockedFinnHubWebUser(HttpUser):
+    tasks = [RobinCopyTaskSet]
+    wait_time = between(3, 5)
 
 
-class FinnHubWebUser(HttpUser):
-    tasks = [FinnHubApiBuyShare]
+class RealFinnHubWebUser(HttpUser):
+    tasks = [FinnHubApiGetShares]
     wait_time = between(30, 32)
