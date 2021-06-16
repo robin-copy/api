@@ -10,6 +10,8 @@ spring:
     url: 'jdbc:postgresql://localhost:5432/postgres'
     username: 'postgres'
     password: '${ASECA_PASSWORD}'
+    FINNHUB_TOKEN: 'c35449iad3idcjopf9vg'
+    MOCKED_EXTERNAL_API: 'false'
 
 server:
   servlet:
