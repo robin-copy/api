@@ -3,6 +3,7 @@ from locust import HttpUser, task, TaskSet, between, SequentialTaskSet
 
 user_id = "2c9280827a15dd51017a15dd56800000"
 
+
 class FinnHubApiGetShares(TaskSet):
     @task
     def get_shares(self):
@@ -46,7 +47,7 @@ class CreateUser(TaskSet):
 
 
 class RobinCopyTaskSet(TaskSet):
-    tasks = {CreateUser: 1, FinnHubApiGetShares: 30, FinnHubApiBuyShare: 40,
+    tasks = {CreateUser: 1, FinnHubApiBuyShare: 40, FinnHubApiGetShares: 30,
              FinnHubApiGetUserShareInfoByStockSymbol: 50, FinnHubApiGetUserSharesSummary: 30}
 
 
