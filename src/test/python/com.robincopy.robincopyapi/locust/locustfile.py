@@ -1,7 +1,7 @@
 import uuid
 from locust import HttpUser, task, TaskSet, between, SequentialTaskSet
 
-user_id = "2c9280837a0ddd12017a0ddd4b2c0000"
+user_id = "2c9280827a15dd51017a15dd56800000"
 
 class FinnHubApiGetShares(TaskSet):
     @task
